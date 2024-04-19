@@ -1,7 +1,10 @@
 import tkinter
 from tkinter import ttk
-
 from tkinter import *
+from tkinter.messagebox import showerror, showwarning, showinfo
+import os
+
+"""Калькулятор на Tkinter"""
 
 
 class MainWindow(Tk):
@@ -86,19 +89,48 @@ class MainWindow(Tk):
         self.inp.delete(0, last=END)
         self.label["text"] = ""
 
+    """Новое окно для раздела Валюта"""
+
     def new_window(self):
         self.new_win = MainWindow()
         self.new_win.title("Валюта")
         self.new_win.geometry("250x250")
-        self.valuta = ["KZT", "USA"]
-        combobox = ttk.Combobox(self.new_win, values=self.valuta)
-        combobox.pack(anchor=CENTER, padx=6, pady=6)
-        valuta_label = ttk.Label(self.new_win, text="<-->")
-        valuta_label.pack(anchor=CENTER, padx=6, pady=6)
-        combobox2 = ttk.Combobox(self.new_win, values=self.valuta)
-        combobox2.pack(anchor=CENTER, padx=6, pady=6)
-        valuta_entry = ttk.Entry(self.new_win)
-        valuta_entry.pack(anchor=CENTER, padx=10, pady=10)
+        ttk.Style().theme_use("clam")
+        valuta = ["KZT", "USD"]
+        # valuta_var = StringVar(value=valuta[1])
+        self.combobox = ttk.Combobox(self.new_win, values=valuta)
+        self.combobox.pack(anchor=CENTER, padx=6, pady=6)
+        self.valuta_label = ttk.Label(self.new_win, text="<-->")
+        self.valuta_label.pack(anchor=CENTER, padx=6, pady=6)
+
+        self.combobox2 = ttk.Combobox(self.new_win, values=valuta)
+        self.combobox2.pack(anchor=CENTER, padx=6, pady=6)
+        self.valuta_entry = ttk.Entry(self.new_win)
+        self.valuta_entry.pack(anchor=CENTER, padx=10, pady=10)
+        valuta_btn = ttk.Button(
+            self.new_win, text="Конвертация", command=self.change_valuta
+        )
+        valuta_btn.pack(anchor=CENTER, padx=10, pady=10)
+
+    def change_valuta(self):
+        if self.combobox.get() == "KZT" and self.combobox2.get() == "USD":
+            self.valuta_label["text"] = int(self.valuta_entry.get()) / 450
+        elif self.combobox.get() == "USD" and self.combobox2.get() == "KZT":
+            self.valuta_label["text"] = int(self.valuta_entry.get()) * 450
+        else:
+            self.valuta_label["text"] = "Выберите валюту!"
+
+    def showinfo(self):
+        tkinter.messagebox.showinfo("Внимание!", "Данный раздел на доработке")
+
+    def themes_alt(self):
+        ttk.Style().theme_use("alt")
+
+    def themes_vista(self):
+        ttk.Style().theme_use("vista")
+
+    def themes_default(self):
+        ttk.Style().theme_use("clam")
 
 
 # root = Tk()
@@ -110,9 +142,15 @@ window.geometry("400x400")
 window.resizable(False, False)
 main_menu = Menu()
 file_menu = Menu(tearoff=0)
+file_menu2 = Menu(tearoff=0)
 main_menu.add_cascade(label="Файл", menu=file_menu)
+main_menu.add_cascade(label="Темы", menu=file_menu2)
+file_menu2.add_command(label="alt", command=window.themes_alt)
+file_menu2.add_command(label="vista", command=window.themes_vista)
+file_menu2.add_command(label="default", command=window.themes_default)
 file_menu.add_command(label="Валюта", command=window.new_window)
-file_menu.add_command(label="Объем")
+file_menu.add_command(label="Объем", command=window.showinfo)
 file_menu.add_command(label="Закрыть", command=lambda: window.destroy())
 window.config(menu=main_menu)
+window.iconbitmap("calc3.ico")
 window.mainloop()
